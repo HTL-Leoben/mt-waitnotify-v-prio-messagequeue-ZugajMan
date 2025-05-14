@@ -1,16 +1,30 @@
 package at.htlle.pos4.prio_messagequeue;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 class Producer extends Thread {
-    PriorityMessageQueue p;
-    Message msg;
-    // Producer name
-    private String name;
+    private final PriorityMessageQueue queue;
+    private final Random rand = new Random();
 
-    // Constructor, getter, setter
+    public Producer(String name, PriorityMessageQueue queue) {
+        super(name);
+        this.queue = queue;
+    }
 
-    // Produce at random time Messages
     @Override
-    public void run(){
-        p.sendMessge(msg);
+    public void run() {
+        int counter = 1;
+        try {
+            while (true) {
+                boolean isPriority = rand.nextBoolean();
+                String content = "Message " + counter++;
+                Message msg = new Message(isPriority, content);
+                queue.sendMessage(msg);
+                Thread.sleep(ThreadLocalRandom.current().nextInt(500, 1500)); // Random sleep
+            }
+        } catch (InterruptedException e) {
+            System.out.println(getName() + " interrupted.");
+        }
     }
 }

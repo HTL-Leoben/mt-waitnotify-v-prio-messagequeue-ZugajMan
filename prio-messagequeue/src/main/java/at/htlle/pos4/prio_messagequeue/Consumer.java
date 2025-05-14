@@ -1,13 +1,24 @@
 package at.htlle.pos4.prio_messagequeue;
 
-class Consumer extends Thread {
-    PriorityMessageQueue p;
-    // Consumer name
-    private String name;
+import java.util.concurrent.ThreadLocalRandom;
 
-    // Constructor, getter, setter
+class Consumer extends Thread {
+    private final PriorityMessageQueue queue;
+
+    public Consumer(String name, PriorityMessageQueue queue) {
+        super(name);
+        this.queue = queue;
+    }
+
     @Override
-    public void run(){
-        p.receiveMessage();
+    public void run() {
+        try {
+            while (true) {
+                queue.receiveMessage();
+                Thread.sleep(ThreadLocalRandom.current().nextInt(800, 2000)); // Random sleep
+            }
+        } catch (InterruptedException e) {
+            System.out.println(getName() + " interrupted.");
+        }
     }
 }
